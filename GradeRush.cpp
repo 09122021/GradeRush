@@ -3,6 +3,7 @@
 #include <random>
 #include <ctime>
 #include <windows.h>
+#include <cmath>
 using namespace bangtal;
 
 ObjectPtr start;
@@ -16,7 +17,7 @@ auto over_F = Object::create("Images/gameover.png", screen2, 400, 400, false);
 
 int move = 30;
 int count = 0;
-const int num_of_grades = 20;
+
 int score = 0;
 
 constexpr int MIN = 1;
@@ -32,13 +33,6 @@ void start_game()
 	showTimer(timer);
 	timer->start();
 }
-
-//bool check_end()
-//{
-	//if (score == 100)
-	//showMessage("100점 달성!");
-	//endGame();
-//}
 
 
 int main()
@@ -61,12 +55,15 @@ int main()
 
 	auto F = Object::create("Images/5.png", screen2, FgradeX, FgradeY);				F->setScale(0.35f);
 
+
 	auto professor = Object::create("Images/professor.png", screen2, 100, 500);
 	professor->setScale(0.5f);
+
 
 	auto studentX = 600, studentY = 10;
 	auto student = Object::create("Images/Student.png", screen2, studentX, studentY);
 	student->setScale(0.8f);
+
 
 	screen2->setOnKeyboardCallback([&](ScenePtr screen2, KeyCode key, bool pressed)->bool {
 		if (key == KeyCode::KEY_RIGHT_ARROW) {
@@ -91,9 +88,17 @@ int main()
 		}
 		});
 
-	//전체 게임 시간
-	timer = Timer::create(60.f); //총 걸린 시간
+	
+	timer = Timer::create(60.f);
+	timer->setOnTimerCallback([&](TimerPtr)-> bool{
 
+		showMessage("시간 초과, 게임 오버!");
+		endGame();
+
+		return true;
+	});
+
+	
 	int space = 50;
 
 	if (abs(AplusgradeX - studentX) < space && abs(AplusgradeY - studentY) < space) {
@@ -102,20 +107,16 @@ int main()
 		count++;
 	}
 		
-
 	if (abs(AgradeX - studentX) < space && abs(AgradeY - studentY) < space) {
 		student->setImage("Images/Agrade.png");
 		A->hide();
 	}
-		
-
 
 	if (abs(BgradeX - studentX) < space && abs(BgradeY - studentY) < space) {
 		student->setImage("Images/Bgrade.png");
 		B->hide();
 	}
 		
-
 	if (abs(CgradeX - studentX) < space && abs(CgradeY - studentY) < space) {
 		student->setImage("Images/Cgrade.png");
 		C->hide();
@@ -128,7 +129,6 @@ int main()
 		timer->stop();
 	}
 
-		
 	if (count == 1) {
 		showMessage("A+이다!");
 		timer->stop();
